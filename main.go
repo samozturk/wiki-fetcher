@@ -45,8 +45,9 @@ func main() {
 	fmt.Println(myRes[1].Title)
 }
 
+// Function to get random titles
 func getRandomTitles(n int) []randRes {
-	var randomResult2 rawResult
+	var randomResult rawResult
 	// Format query string
 	queryString := fmt.Sprintf("https://en.wikipedia.org/w/api.php?action=query&list=random&rnnamespace=0&rnlimit=%v&format=json", n)
 	// Get response
@@ -62,8 +63,29 @@ func getRandomTitles(n int) []randRes {
 	// Unmarshall it into an instance of a struct if json structure is valid
 	checkValid := json.Valid(body)
 	if checkValid {
-		json.Unmarshal(body, &randomResult2)
+		json.Unmarshal(body, &randomResult)
 	}
+	return randomResult.Query.Pages
+}
 
-	return randomResult2.Query.Pages
+// Function to get page text
+func getPageText(tit string) pageRes {
+	var pageResult pageRes
+	queryString := fmt.Sprintf("https://en.wikipedia.org/w/api.php?action=query&prop=extracts&titles=%v&explaintext=True&format=json", tit)
+	// Get response
+	resp, err := http.Get(queryString)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// Read body as bytes
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// Unmarshall it into an instance of a struct if json structure is valid
+	checkValid := json.Valid(body)
+	if checkValid {
+		json.Unmarshal(body, &pageResult)
+	}
+	return pageResult
 }
