@@ -14,3 +14,10 @@ type randRes struct {
 	// Ns    int    `json:"ns"`
 	Title string `json:"title"`
 }
+
+// Stuct for database
+type pageWordCount struct {
+	pId       int
+	text      string
+	wordCount int
+}
