@@ -10,7 +10,7 @@ type randQueryResult struct {
 	Pages []randRes `json:"random"`
 }
 type randRes struct {
-	Id int `json:"id"`
+	Id uint64 `json:"id"`
 	// Ns    int    `json:"ns"`
 	Title string `json:"title"`
 }

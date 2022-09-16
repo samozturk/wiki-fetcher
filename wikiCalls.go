@@ -11,10 +11,10 @@ import (
 )
 
 // Function to get random titles
-func getRandomTitles(n int) []randRes {
+func getRandomTitleId() (uint64, string) {
 	var randomResult randRawResult
 	// Format query string
-	queryString := fmt.Sprintf("https://en.wikipedia.org/w/api.php?action=query&list=random&rnnamespace=0&rnlimit=%v&format=json", n)
+	queryString := fmt.Sprintf("https://en.wikipedia.org/w/api.php?action=query&list=random&rnnamespace=0&rnlimit=1&format=json")
 	// Get response
 	resp, err := http.Get(queryString)
 	if err != nil {
@@ -31,11 +31,11 @@ func getRandomTitles(n int) []randRes {
 	if checkValid {
 		json.Unmarshal(body, &randomResult)
 	}
-	return randomResult.Query.Pages
+	return randomResult.Query.Pages[0].Id, randomResult.Query.Pages[0].Title
 }
 
 // Function to get page text
-func getPageText(pId int) string {
+func getPageText(pId uint64) string {
 
 	queryString := fmt.Sprintf("https://en.wikipedia.org/w/api.php?action=query&prop=extracts&pageids=%v&explaintext=True&format=json", pId)
 

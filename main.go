@@ -3,31 +3,26 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
+	"os"
 )
 
 var collection *mongo.Collection
 var ctx = context.TODO()
 
 func main() {
-	rand_Queries := getRandomTitles(10)
-	wikis := collectTxt(rand_Queries)
-	fmt.Println(wikis[9])
-
-	// wikiMap = make(map[string]interface{})
-	for _, j := range rand_Queries {
-		fmt.Println(j.Id)
-		fmt.Println(j.Title)
-		fmt.Println("---")
+	for i := 0; i <= 9; i++ {
+		pId, title := getRandomTitleId()
+		text := getPageText(pId)
+		m := mapPage(pId, title, text, "and")
+		insertDb(m)
 	}
-
+	os.Exit(0)
 }
 
-func insertDb() {
+func insertDb(m map[string]interface{}) {
 	mongoURI := "mongodb://root:password@localhost:27017/"
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 	if err != nil {
@@ -43,16 +38,13 @@ func insertDb() {
 	demoDB := client.Database("freenow")
 	// defer catsCollection.Drop(ctx)
 
-	err = demoDB.CreateCollection(ctx, "taxi")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = demoDB.CreateCollection(ctx, "taxi")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	taxiCollection := demoDB.Collection("taxi")
 
-	result, err := taxiCollection.InsertOne(ctx, bson.D{
-		{Key: "name", Value: "Mocha"},
-		{Key: "breed", Value: "Turkish Van"},
-	})
+	result, err := taxiCollection.InsertOne(ctx, m)
 	fmt.Println(result)
 }
 

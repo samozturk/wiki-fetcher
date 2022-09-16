@@ -1,16 +1,25 @@
 package main
 
-import "strings"
+import (
+	"strings"
+)
 
 // Function to collect wikipedia page text into an array
-func collectTxt(pages []randRes) []string {
-	var clc []string
-	for _, title := range pages {
-		pId := title.Id
-		pageTxt := getPageText(pId)
-		clc = append(clc, pageTxt)
-	}
-	return clc
+func mapPage(pId uint64, title string, text string, word string) map[string]interface{} {
+	// var clc []string
+	// for _, title := range pages {
+	// 	pId := title.Id
+	// 	pageTxt := getPageText(pId)
+	// 	clc = append(clc, pageTxt)
+	// }
+	// return clc
+	m := make(map[string]interface{})
+
+	m["pid"] = pId
+	m["title"] = title
+	m["text"] = text
+	m["count"] = countWord(text, word)
+	return m
 }
 
 func countWord(text string, word string) int {
