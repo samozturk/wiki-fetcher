@@ -1,7 +1,14 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"log"
 	"strings"
+	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Function to collect wikipedia page text into an array
@@ -30,4 +37,31 @@ func countWord(text string, word string) int {
 		}
 	}
 	return cnt
+}
+
+func insertDb(m map[string]interface{}) {
+	mongoURI := "mongodb://root:password@localhost:27017/"
+	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//defer client.Disconnect(ctx)
+
+	demoDB := client.Database("freenow")
+	// defer catsCollection.Drop(ctx)
+
+	// err = demoDB.CreateCollection(ctx, "taxi")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	taxiCollection := demoDB.Collection("taxi")
+
+	result, err := taxiCollection.InsertOne(ctx, m)
+	defer client.Disconnect(ctx)
+	fmt.Println(result)
 }
